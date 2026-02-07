@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: pesapal-ipn
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn pesapal_ipn.wsgi:application
+    plan: free
