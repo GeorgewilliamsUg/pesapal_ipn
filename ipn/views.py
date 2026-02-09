@@ -4,6 +4,9 @@ from django.views.decorators.csrf import csrf_exempt
 
 logger = logging.getLogger(__name__)
 
+def home(request):
+    return HttpResponse("OK", status=200)
+
 @csrf_exempt
 def pesapal_ipn(request):
     data = request.GET.dict() or request.POST.dict()
