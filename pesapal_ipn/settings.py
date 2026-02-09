@@ -11,6 +11,12 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+
+os.environ.get("PESAPAL_BASE_URL", "https://api.pesapal.com")
+os.environ.get("PESAPAL_CONSUMER_KEY", "3KoLs2rJiPBkmDoNUpOOlh4eHTQMPGij")
+os.environ.get("PESAPAL_CONSUMER_SECRET", "ydBy5zZTOaE2My1DYMjYBTad5ow=")
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -70,6 +76,20 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'pesapal_ipn.wsgi.application'
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
+}
 
 
 # Database
