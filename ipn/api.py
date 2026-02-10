@@ -1,42 +1,30 @@
 import json
-import os
-import logging
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from .services import submit_order
 
-logger = logging.getLogger(__name__)
 
 @csrf_exempt
 def create_order(request):
     if request.method != "POST":
-        return JsonResponse({"error": "POST only"}, status=405)
+        return JsonResponse({"error": "POST required"}, status=405)
 
     try:
-        body = request.body.decode("utf-8")
-        data = json.loads(body)
-    except Exception as e:
-        logger.error(f"JSON error: {e}")
+        data = json.loads(request.body)
+    except Exception:
         return JsonResponse({"error": "Invalid JSON"}, status=400)
 
-    logger.info(f"Incoming payload: {data}")
-
     required = ["amount", "currency", "first_name", "last_name", "email"]
-    missing = [f for f in required if f not in data]
+    if any(k not in data or not data[k] for k in required):
+        return JsonResponse({"error": "Missing required fields"}, status=400)
 
-    if missing:
-        return JsonResponse(
-            {"error": f"Missing fields: {', '.join(missing)}"},
-            status=400
-        )
+    try:
+        pesapal_response = submit_order(data)
+    except Exception:
+        return JsonResponse({"error": "Payment initiation failed"}, status=502)
 
-    consumer_key = os.environ.get("PESAPAL_CONSUMER_KEY")
-    consumer_secret = os.environ.get("PESAPAL_CONSUMER_SECRET")
+    checkout_url = pesapal_response.get("redirect_url")
+    if not checkout_url:
+        return JsonResponse({"error": "No checkout URL"}, status=502)
 
-    if not consumer_key or not consumer_secret:
-        logger.error("PesaPal env vars missing")
-        return JsonResponse(
-            {"error": "Payment configuration error"},
-            status=500
-        )
-
-    return JsonResponse({"status": "ok"})
+    return JsonResponse({"checkout_url": checkout_url})

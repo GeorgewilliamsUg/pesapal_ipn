@@ -1,17 +1,24 @@
+import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from .services import verify_payment
+
 
 @csrf_exempt
 def ipn_view(request):
-    return JsonResponse({
-        "status": "ok",
-        "method": request.method,
-    })
+    order_tracking_id = request.GET.get("OrderTrackingId")
+    notification_type = request.GET.get("OrderNotificationType")
 
-@csrf_exempt
-def create_order(request):
+    if not order_tracking_id or not notification_type:
+        return JsonResponse({"status": 400})
+
+    try:
+        payment = verify_payment(order_tracking_id)
+    except Exception:
+        return JsonResponse({"status": 500})
+
     return JsonResponse({
-        "method": request.method,
-        "body_raw": str(request.body),
-        "content_type": request.content_type,
+        "orderNotificationType": notification_type,
+        "orderTrackingId": order_tracking_id,
+        "status": 200,
     })
