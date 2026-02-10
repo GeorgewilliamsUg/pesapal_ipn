@@ -147,5 +147,6 @@ PESAPAL_BASE_URL = os.environ.get(
     "https://cybqa.pesapal.com/pesapalv3"
 )
 
-PESAPAL_CONSUMER_KEY = os.environ.get("PESAPAL_CONSUMER_KEY", "TDpigBOOhs+zAl8cwH2Fl82jJGyD8xev")
-PESAPAL_CONSUMER_SECRET = os.environ.get("PESAPAL_CONSUMER_SECRET", "1KpqkfsMaihIcOlhnBo/gBZ5smw=")
+PESAPAL_CONSUMER_KEY = os.environ.get("PESAPAL_CONSUMER_KEY")
+PESAPAL_CONSUMER_SECRET = os.environ.get("PESAPAL_CONSUMER_SECRET")
+PESAPAL_IPN_ID = os.environ.get("PESAPAL_IPN_ID")

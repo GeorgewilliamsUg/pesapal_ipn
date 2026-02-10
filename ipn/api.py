@@ -1,4 +1,5 @@
 import json
+import uuid
 import requests
 from django.conf import settings
 from django.http import JsonResponse
@@ -28,7 +29,10 @@ def create_order(request):
             "Accept": "application/json",
         }
 
+        merchant_reference = f"NISSI-{uuid.uuid4().hex[:12]}"
+
         order_payload = {
+            "id": merchant_reference,
             "amount": amount,
             "currency": currency,
             "description": "Donation to Nissi Medical Outreach",
@@ -36,6 +40,8 @@ def create_order(request):
             "notification_id": settings.PESAPAL_IPN_ID,
             "billing_address": {
                 "email_address": email,
+                "first_name": payload.get("first_name", ""),
+                "last_name": payload.get("last_name", "")
             },
         }
 

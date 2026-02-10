@@ -3,26 +3,29 @@ from django.conf import settings
 
 
 def get_access_token():
-    url = f"{settings.PESAPAL_BASE_URL}/api/Auth/RequestToken"
+    url = "https://pay.pesapal.com/v3/api/Auth/RequestToken"
 
-    response = requests.post(
-        url,
-        json={
-            "consumer_key": settings.PESAPAL_CONSUMER_KEY,
-            "consumer_secret": settings.PESAPAL_CONSUMER_SECRET,
-        },
-        timeout=10,
-    )
+    payload = {
+        "consumer_key": settings.PESAPAL_CONSUMER_KEY,
+        "consumer_secret": settings.PESAPAL_CONSUMER_SECRET,
+    }
+
+    response = requests.post(url, json=payload, timeout=15)
     response.raise_for_status()
-    return response.json()["token"]
+
+    data = response.json()
+
+    if "token" not in data:
+        raise Exception(f"Invalid token response from Pesapal: {data}")
+
+    return data["token"]
 
 
 def verify_payment(order_tracking_id):
     token = get_access_token()
 
     url = (
-        f"{settings.PESAPAL_BASE_URL}"
-        f"/api/Transactions/GetTransactionStatus"
+        "https://pay.pesapal.com/v3/api/Transactions/GetTransactionStatus"
         f"?orderTrackingId={order_tracking_id}"
     )
 
@@ -35,6 +38,3 @@ def verify_payment(order_tracking_id):
     response.raise_for_status()
 
     return response.json()
-
-def get_access_token():
-    return "dummy-token"
