@@ -1,9 +1,13 @@
 from django.urls import path
-from . import views, api
+from django.http import JsonResponse
+from .views import ipn_view
+from .api import create_order
 
-app_name = "ipn"
+def health_check(request):
+    return JsonResponse({"status": "ok"})
 
 urlpatterns = [
-    path("", views.pesapal_ipn, name="pesapal_ipn"),
-    path("create-order/", api.create_order, name="create_order"),
+    path("", ipn_view, name="pesapal_ipn"),
+    path("health/", health_check, name="health"),
+    path("create-order/", create_order, name="create_order"),
 ]
