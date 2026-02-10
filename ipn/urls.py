@@ -1,4 +1,3 @@
-from django.urls import path
 from django.http import JsonResponse
 from django.urls import path
 from .views import ipn_view
