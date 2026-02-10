@@ -1,80 +1,42 @@
 import json
-import uuid
+import os
 import logging
-import requests
-from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .services import get_access_token
 
 logger = logging.getLogger(__name__)
 
 @csrf_exempt
 def create_order(request):
     if request.method != "POST":
-        return JsonResponse({"error": "Method not allowed"}, status=405)
+        return JsonResponse({"error": "POST only"}, status=405)
 
     try:
-        payload = json.loads(request.body.decode("utf-8"))
+        body = request.body.decode("utf-8")
+        data = json.loads(body)
+    except Exception as e:
+        logger.error(f"JSON error: {e}")
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
 
-        amount = payload.get("amount")
-        currency = payload.get("currency", "USD")
-        email = payload.get("email")
-        first_name = payload.get("first_name", "")
-        last_name = payload.get("last_name", "")
+    logger.info(f"Incoming payload: {data}")
 
-        if not amount or not email:
-            return JsonResponse({"error": "Invalid data"}, status=400)
+    required = ["amount", "currency", "first_name", "last_name", "email"]
+    missing = [f for f in required if f not in data]
 
-        amount = float(amount)  # IMPORTANT
-
-        merchant_reference = f"NISSI-{uuid.uuid4().hex[:12]}"
-
-        token = get_access_token()
-
-        headers = {
-            "Authorization": f"Bearer {token}",
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-        }
-
-        order_payload = {
-            "id": merchant_reference,
-            "amount": amount,
-            "currency": currency,
-            "description": "Donation to Nissi Medical Outreach",
-            "callback_url": "https://nissimedicaloutreach.org/thank-you.html",
-            "notification_id": settings.PESAPAL_IPN_ID,
-            "billing_address": {
-                "email_address": email,
-                "first_name": first_name,
-                "last_name": last_name,
-            },
-        }
-
-        logger.info("Submitting Pesapal order payload: %s", order_payload)
-
-        response = requests.post(
-            "https://pay.pesapal.com/v3/api/Transactions/SubmitOrderRequest",
-            json=order_payload,
-            headers=headers,
-            timeout=20,
+    if missing:
+        return JsonResponse(
+            {"error": f"Missing fields: {', '.join(missing)}"},
+            status=400
         )
 
-        logger.info("Pesapal response status: %s", response.status_code)
-        logger.info("Pesapal response body: %s", response.text)
+    consumer_key = os.environ.get("PESAPAL_CONSUMER_KEY")
+    consumer_secret = os.environ.get("PESAPAL_CONSUMER_SECRET")
 
-        response.raise_for_status()
-        data = response.json()
-
-        if "redirect_url" not in data:
-            raise Exception(f"Unexpected Pesapal response: {data}")
-
-        return JsonResponse({"checkout_url": data["redirect_url"]})
-
-    except Exception:
-        logger.exception("Create order failed")
+    if not consumer_key or not consumer_secret:
+        logger.error("PesaPal env vars missing")
         return JsonResponse(
-            {"error": "Create order failed. Check server logs."},
+            {"error": "Payment configuration error"},
             status=500
         )
+
+    return JsonResponse({"status": "ok"})
