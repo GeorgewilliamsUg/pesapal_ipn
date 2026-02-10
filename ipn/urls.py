@@ -8,8 +8,8 @@ def health_check(request):
     return JsonResponse({"status": "ok"})
 
 urlpatterns = [
-    path("", health_check),
-    path("ipn/", ipn_view),
+    path("", ipn_view),
+    path("health/", health_check),
     path("create-order/", create_order),
 ]
 
