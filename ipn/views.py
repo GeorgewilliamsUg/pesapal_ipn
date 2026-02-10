@@ -22,3 +22,9 @@ def ipn_view(request):
         "orderTrackingId": order_tracking_id,
         "status": 200,
     })
+
+
+# Backwards-compatible name used by urls.py
+@csrf_exempt
+def pesapal_ipn(request):
+    return ipn_view(request)

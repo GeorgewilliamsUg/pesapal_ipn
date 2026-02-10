@@ -51,3 +51,25 @@ def submit_order(data):
     response.raise_for_status()
 
     return response.json()
+
+
+def verify_payment(order_tracking_id):
+    if not order_tracking_id:
+        raise ValueError("order_tracking_id is required")
+
+    token = get_access_token()
+
+    url = (
+        f"{settings.PESAPAL_BASE_URL}/api/Transactions/GetTransactionStatus"
+        f"?orderTrackingId={order_tracking_id}"
+    )
+
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/json",
+    }
+
+    response = requests.get(url, headers=headers, timeout=15)
+    response.raise_for_status()
+
+    return response.json()
