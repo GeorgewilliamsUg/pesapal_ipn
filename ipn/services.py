@@ -35,3 +35,6 @@ def verify_payment(order_tracking_id):
     response.raise_for_status()
 
     return response.json()
+
+def get_access_token():
+    return "dummy-token"

@@ -1,8 +1,5 @@
 import json
-try:
-    import requests
-except ImportError:
-    raise ImportError("requests library is not installed. Install it using: pip install requests")
+import requests
 from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt

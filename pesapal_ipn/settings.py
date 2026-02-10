@@ -13,11 +13,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 
-os.environ.get("PESAPAL_BASE_URL", "https://api.pesapal.com")
-os.environ.get("PESAPAL_CONSUMER_KEY", "3KoLs2rJiPBkmDoNUpOOlh4eHTQMPGij")
-os.environ.get("PESAPAL_CONSUMER_SECRET", "ydBy5zZTOaE2My1DYMjYBTad5ow=")
-
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -143,3 +138,14 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+import os
+
+PESAPAL_BASE_URL = os.environ.get(
+    "PESAPAL_BASE_URL",
+    "https://cybqa.pesapal.com/pesapalv3"
+)
+
+PESAPAL_CONSUMER_KEY = os.environ.get("PESAPAL_CONSUMER_KEY", "TDpigBOOhs+zAl8cwH2Fl82jJGyD8xev")
+PESAPAL_CONSUMER_SECRET = os.environ.get("PESAPAL_CONSUMER_SECRET", "1KpqkfsMaihIcOlhnBo/gBZ5smw=")
