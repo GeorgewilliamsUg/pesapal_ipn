@@ -142,11 +142,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 import os
 
-PESAPAL_BASE_URL = os.environ.get(
-    "PESAPAL_BASE_URL",
-    "https://cybqa.pesapal.com/pesapalv3"
-)
+PESAPAL_BASE_URL = "https://pay.pesapal.com/v3"
 
-PESAPAL_CONSUMER_KEY = os.environ.get("PESAPAL_CONSUMER_KEY")
-PESAPAL_CONSUMER_SECRET = os.environ.get("PESAPAL_CONSUMER_SECRET")
-PESAPAL_IPN_ID = os.environ.get("PESAPAL_IPN_ID")
+PESAPAL_CONSUMER_KEY = os.environ["PESAPAL_CONSUMER_KEY"]
+PESAPAL_CONSUMER_SECRET = os.environ["PESAPAL_CONSUMER_SECRET"]
+PESAPAL_IPN_ID = os.environ["PESAPAL_IPN_ID"]
