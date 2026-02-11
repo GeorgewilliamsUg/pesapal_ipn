@@ -55,8 +55,11 @@ def submit_order(data):
     }
 
     response = requests.post(url, json=payload, headers=headers, timeout=15)
-    response.raise_for_status()
 
+    print("Pesapal status:", response.status_code)
+    print("Pesapal response:", response.text)
+
+    response.raise_for_status()
     return response.json()
 
 
