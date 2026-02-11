@@ -39,11 +39,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'ipn',
+    'corsheaders',
     
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -139,6 +141,11 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+CORS_ALLOWED_ORIGINS = [
+    "https://github.com/GeorgewilliamsUg",
+]
+
+
 
 import os
 
@@ -149,3 +156,4 @@ PESAPAL_CONSUMER_SECRET = os.environ["PESAPAL_CONSUMER_SECRET"]
 PESAPAL_IPN_ID = os.environ["PESAPAL_IPN_ID"]
 
 
+CORS_ALLOW_CREDENTIALS = True
