@@ -1,11 +1,14 @@
 import json
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from .services import submit_order
 
 
 @csrf_exempt
 def create_order(request):
+    if request.method == "OPTIONS":
+        return HttpResponse(status=204)
+
     if request.method != "POST":
         return JsonResponse({"error": "POST required"}, status=405)
 
