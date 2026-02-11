@@ -16,11 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from ipn import api as ipn_api
 
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("ipn/", include("ipn.urls")),
+    path("api/create-order/", ipn_api.create_order, name="api_create_order"),
     
 ]
 

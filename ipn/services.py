@@ -1,6 +1,8 @@
+import uuid
+from decimal import Decimal, InvalidOperation
+
 import requests
 from django.conf import settings
-import uuid
 
 
 def get_access_token():
@@ -25,27 +27,51 @@ def submit_order(data):
 
     url = f"{settings.PESAPAL_BASE_URL}/api/Transactions/SubmitOrderRequest"
 
+    try:
+        amount = Decimal(str(data["amount"])).quantize(Decimal("0.01"))
+    except (InvalidOperation, KeyError, TypeError) as exc:
+        raise ValueError("Invalid amount") from exc
+
+    currency = str(data.get("currency", "")).upper()
+    if not currency:
+        raise ValueError("Currency is required")
+
+    billing_address = {
+        "email_address": data["email"],
+        "first_name": data["first_name"],
+        "last_name": data["last_name"],
+        "phone_number": data.get("phone_number", "0700000000"),
+        "country_code": data.get("country_code", "UG"),
+    }
+
+    # Optional billing fields if provided by the client
+    optional_fields = [
+        "middle_name",
+        "line_1",
+        "line_2",
+        "city",
+        "state",
+        "postal_code",
+        "zip_code",
+    ]
+    for field in optional_fields:
+        if data.get(field):
+            billing_address[field] = data[field]
+
+    callback_url = getattr(
+        settings,
+        "PESAPAL_CALLBACK_URL",
+        "https://nissimedicaloutreach.org/thank-you.html",
+    )
+
     payload = {
         "id": str(uuid.uuid4()),
-        "currency": data["currency"],
-        "amount": float(data["amount"]),
-        "description": "Nissi Medical Outreach Donation",
-        "callback_url": "https://nissimedicaloutreach.org/thank-you.html",
+        "currency": currency,
+        "amount": float(amount),
+        "description": data.get("description", "Nissi Medical Outreach Donation"),
+        "callback_url": callback_url,
         "notification_id": settings.PESAPAL_IPN_ID,
-        "billing_address": {
-            "email_address": data["email"],
-            "phone_number": "0700000000",
-            "country_code": "UG",
-            "first_name": data["first_name"],
-            "middle_name": "",
-            "last_name": data["last_name"],
-            "line_1": "Kampala",
-            "line_2": "",
-            "city": "Kampala",
-            "state": "",
-            "postal_code": "",
-            "zip_code": ""
-        },
+        "billing_address": billing_address,
     }
 
     headers = {
