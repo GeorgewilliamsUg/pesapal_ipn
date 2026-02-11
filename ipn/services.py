@@ -20,7 +20,6 @@ def get_access_token():
 
     return token
 
-
 def submit_order(data):
     token = get_access_token()
 
@@ -31,13 +30,21 @@ def submit_order(data):
         "currency": data["currency"],
         "amount": float(data["amount"]),
         "description": "Nissi Medical Outreach Donation",
-        "callback_url": "https://nissi-website.github.io/thank-you.html",
+        "callback_url": "https://nissimedicaloutreach.org/thank-you.html",
         "notification_id": settings.PESAPAL_IPN_ID,
         "billing_address": {
             "email_address": data["email"],
-            "first_name": data["first_name"],
-            "last_name": data["last_name"],
+            "phone_number": "0700000000",
             "country_code": "UG",
+            "first_name": data["first_name"],
+            "middle_name": "",
+            "last_name": data["last_name"],
+            "line_1": "Kampala",
+            "line_2": "",
+            "city": "Kampala",
+            "state": "",
+            "postal_code": "",
+            "zip_code": ""
         },
     }
 
